@@ -74,11 +74,25 @@ node scripts/verify.mjs
 
 ## 安装
 
+### 一条命令
+
+```bash
+dsh plugin --profile desktop add "github:nubeslove/dsh-web-preview"
+```
+
+然后在 `$DSH_HOME/profiles/desktop/package.json` 的 `dsh.profile.bundles` 里追加 `"dsh-web-preview"`，重启 DSH。
+
+实测 pnpm 11.9 从 GitHub 直接拉取，3.9 秒装完。插件是纯 JS，没有构建步骤，也没有任何运行时依赖。
+
+### 本地开发
+
+自己改代码时用 link 指向工作副本：
+
 ```bash
 dsh plugin --profile desktop add "link:/absolute/path/to/dsh-web-preview"
 ```
 
-路径含空格时改为手工方式：在 `profiles/desktop/package.json` 的 `dependencies` 加 `"dsh-web-preview": "link:E:/path/to/dsh-web-preview"`，在 `dsh.profile.bundles` 追加 `"dsh-web-preview"`，并在 `profiles/desktop/node_modules/` 下建指向本目录的 Junction，然后重启 DSH。
+路径含空格时手工处理：在 `profiles/desktop/package.json` 的 `dependencies` 加 `"dsh-web-preview": "link:E:/path/to/dsh-web-preview"`，在 `dsh.profile.bundles` 追加 `"dsh-web-preview"`，并在 `profiles/desktop/node_modules/` 下建指向本目录的 Junction，然后重启 DSH。
 
 ## 许可证
 
