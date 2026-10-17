@@ -1,0 +1,62 @@
+{
+  "name": "dsh-web-preview",
+  "version": "0.1.0",
+  "description": "DSH 侧栏网页预览：在右侧栏直接打开本地开发服务器或任意 http/https 页面，不用跳出 DSH 去开外部浏览器。",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "scripts",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
+    }
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "plugin",
+    "preview",
+    "browser",
+    "iframe",
+    "sidebar"
+  ],
+  "author": {
+    "name": "nubeslove",
+    "email": "1992335297@qq.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nubeslove/dsh-web-preview.git"
+  },
+  "homepage": "https://github.com/nubeslove/dsh-web-preview#readme",
+  "bugs": {
+    "url": "https://github.com/nubeslove/dsh-web-preview/issues"
+  },
+  "engines": {
+    "node": ">=22.19"
+  }
+}
