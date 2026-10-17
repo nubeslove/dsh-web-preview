@@ -10,6 +10,10 @@ Preview web pages inside the DeepSeek Harness right sidebar — no external brow
 
 ---
 
+![右侧栏网页预览](docs/preview.png)
+
+> 图为界面示意，按插件 `lib/client.js` 的地址栏与 iframe 布局渲染，不是运行截图。可用 `node scripts/make-screenshots.mjs` 重新生成（源码在 `scripts/demo/preview.html`）。
+
 ## 它解决什么问题
 
 写完前端要验证效果，标准流程是切到浏览器、开新标签、输地址、再切回来。真机上窗口一多就找不着北。DSH 的右侧栏本来就是文件预览的地盘，把网页也放进去，视线不用离开对话。
