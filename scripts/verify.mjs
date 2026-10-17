@@ -54,10 +54,47 @@ async function main() {
 
   const clientSrc = await readFile(join(root, 'lib', 'client.js'), 'utf8');
 
-  await check('客户端脚本语法有效', () => {
-    assert(clientSrc.includes('__ModuleLoader__.load'), '缺少模块加载外壳');
-    assert(/id:\s*"dsh-web-preview"/.test(clientSrc), '模块 id 不符');
-    new Function(clientSrc);
+  // 真实加载客户端模块：用假的 window.__ModuleLoader__ 捕获注册定义，
+  // 再以假 require 调用 factory，验证导出的 apply / inject。
+  const captured = { definition: null, exports: null, error: null };
+  const fakeReact = {
+    createElement: () => null,
+    useState: (v) => [v, () => {}],
+    useEffect: () => {},
+    useRef: (v) => ({ current: v }),
+    useMemo: (fn) => fn(),
+    useCallback: (fn) => fn
+  };
+  const fakeRequire = (name) => {
+    if (name === 'react') return fakeReact;
+    throw new Error('unexpected require: ' + name);
+  };
+  globalThis.window = {
+    __ModuleLoader__: {
+      load(definition) {
+        captured.definition = definition;
+      }
+    }
+  };
+
+  await check('客户端模块可被加载器注册', async () => {
+    await import(pathToFileURL(join(root, 'lib', 'client.js')).href);
+    assert(captured.definition !== null, '未调用 __ModuleLoader__.load');
+    assert(captured.definition.id === 'dsh-web-preview', '模块 id 不符：' + captured.definition.id);
+    assert(typeof captured.definition.factory === 'function', 'factory 缺失');
+  });
+
+  await check('客户端 factory 导出 apply 与 inject', () => {
+    try {
+      captured.exports = captured.definition.factory(fakeRequire);
+    } catch (err) {
+      captured.error = err;
+    }
+    assert(captured.error === null, 'factory 抛错：' + (captured.error && captured.error.message));
+    assert(typeof captured.exports.apply === 'function', 'apply 未导出');
+    assert(Array.isArray(captured.exports.inject), 'inject 必须是数组');
+    assert(captured.exports.inject.includes('sidebarRightTabs'), 'inject 缺少 sidebarRightTabs');
+    assert(captured.exports.inject.includes('sidebarRight'), 'inject 缺少 sidebarRight');
   });
 
   await check('客户端声明侧栏服务依赖', () => {
